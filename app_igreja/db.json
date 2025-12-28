@@ -1,5 +1,40 @@
-[
+{
+  "usuarios": [
     {
-        
+      "id": "dc11",
+      "nome": "Teste",
+      "cpf": "123456789011",
+      "senha": "123",
+      "membro": true,
+      "dataNascimento": "2007-08-25",
+      "dataBatismo": "2014-05-17",
+      "endereco": {
+        "logradouro": "Primeira Travessa Amaro Duarte",
+        "numero": "171",
+        "complemento": "Ao lado do terminal de Tabatinga",
+        "bairro": "Tabatinga",
+        "cidade": "Camaragibe",
+        "estado": "PE",
+        "cep": null
+      }
+    },
+    {
+      "id": "22eb",
+      "nome": "First",
+      "cpf": "098765432133",
+      "senha": "321",
+      "membro": false,
+      "dataNascimento": "2005-11-05",
+      "dataBatismo": null,
+      "endereco": {
+        "logradouro": "Rua de Teste",
+        "numero": "110",
+        "complemento": "Perto da Igreja Ágape",
+        "bairro": "Piedade",
+        "cidade": "Jaboatão dos Guararapes",
+        "estado": "PE",
+        "cep": null
+      }
     }
-]
+  ]
+}

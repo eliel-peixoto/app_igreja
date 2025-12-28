@@ -4,13 +4,18 @@ import {
   Text,
   View,
   Platform,
-  TouchableOpacity
+  TouchableOpacity,
+  ScrollView,
+  KeyboardAvoidingView
 } from 'react-native';
 
 import { Input, Button } from 'react-native-elements';
 import { MaterialIcons } from '@expo/vector-icons';
 import { RadioButton } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
+
+import FormSection from '../components/FormSection';
+import api from '../services/api';
 
 const RegisterScreen = ({ navigation }) => {
 
@@ -19,6 +24,17 @@ const RegisterScreen = ({ navigation }) => {
   const [nome, setNome] = useState('');
 
   const [cpf, setCpf] = useState('');
+
+    const [endereco, setEndereco] = useState({
+  logradouro: '',
+  numero: '',
+  complemento: '',
+  bairro: '',
+  cidade: '',
+  estado: '',
+  cep: ''
+});
+
 
   const [possuiBatismo, setPossuiBatismo] = useState('nao');
 
@@ -74,111 +90,257 @@ const RegisterScreen = ({ navigation }) => {
     }
   };
 
+  const handleCadastrar = async () => {
+    try {
+        const payload = {
+        nome,
+        cpf,
+        senha,
+        membro: possuiBatismo === 'sim',
+        dataNascimento: dateNasc
+        ? dateNasc.toISOString().split('T')[0]
+        : null,
+        dataBatismo:
+        possuiBatismo === 'sim' && dateBatismo
+            ? dateBatismo.toISOString().split('T')[0]
+            : null,
+        endereco: {
+        logradouro: endereco.logradouro,
+        numero: endereco.numero,
+        complemento: endereco.complemento || null,
+        bairro: endereco.bairro,
+        cidade: endereco.cidade,
+        estado: endereco.estado,
+        cep: endereco.cep || null
+        }
+    };
+
+    await api.post('/usuarios', payload);
+    navigation.navigate('Login');
+
+  }catch (error){
+    console.log('Erro ao cadastrar:', error.message);
+  }
+
+};
+
   /* ---------------- RENDER ---------------- */
 
   return (
-    <View style={styles.container}>
-
-      <Text>Nome</Text>
-      <Input placeholder="Digite seu nome" value={nome} onChangeText={setNome}/>
-
-      <Text>CPF</Text>
-      <Input placeholder="Digite seu CPF" keyboardType="numeric" value={cpf} onChangeText={setCpf}/>
-
-      {/* DATA DE NASCIMENTO */}
-      <Text>Data de nascimento</Text>
-      <Input
-        placeholder="DD/MM/AAAA"
-        keyboardType="numeric"
-        value={textDateNasc}
-        onChangeText={(text) => {
-          const formatted = formatarData(text);
-          setTextDateNasc(formatted);
-          parseDate(formatted, setDateNasc);
-        }}
-        rightIcon={
-          <TouchableOpacity onPress={() => setPickerAberto('nascimento')}>
-            <MaterialIcons name="calendar-today" size={22} color="#555" />
-          </TouchableOpacity>
-        }
-      />
-
-      {/* RADIO */}
-      <Text style={styles.label}>É membro ou congregado?</Text>
-      <RadioButton.Group
-        value={possuiBatismo}
-        onValueChange={(value) => {
-          setPossuiBatismo(value);
-          if (value === 'nao') {
-            setTextDateBatismo('');
-            setDateBatismo(null);
-          }
-        }}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        <RadioButton.Item label="Congregado" value="nao" />
-        <RadioButton.Item label="Membro" value="sim" />
-      </RadioButton.Group>
 
-      {/* DATA DE BATISMO */}
-      {possuiBatismo === 'sim' && (
-        <>
-          <Text>Data de batismo</Text>
+        <FormSection title="Dados pessoais">
           <Input
-            placeholder="DD/MM/AAAA"
+            placeholder="Nome completo"
+            value={nome}
+            onChangeText={setNome}
+            containerStyle={styles.input}
+          />
+
+          <Input
+            placeholder="CPF"
             keyboardType="numeric"
-            value={textDateBatismo}
+            value={cpf}
+            onChangeText={setCpf}
+            containerStyle={styles.input}
+          />
+        </FormSection>
+
+        <FormSection title="Datas">
+          <Input
+            placeholder="Data de nascimento (DD/MM/AAAA)"
+            keyboardType="numeric"
+            value={textDateNasc}
             onChangeText={(text) => {
               const formatted = formatarData(text);
-              setTextDateBatismo(formatted);
-              parseDate(formatted, setDateBatismo);
+              setTextDateNasc(formatted);
+              parseDate(formatted, setDateNasc);
             }}
             rightIcon={
-              <TouchableOpacity onPress={() => setPickerAberto('batismo')}>
+              <TouchableOpacity onPress={() => setPickerAberto('nascimento')}>
                 <MaterialIcons name="calendar-today" size={22} color="#555" />
               </TouchableOpacity>
             }
+            containerStyle={styles.input}
           />
-        </>
-      )}
+        </FormSection>
 
-      {/* DATE PICKER ÚNICO */}
-      {pickerAberto && (
-        <DateTimePicker
-          value={
-            pickerAberto === 'nascimento'
-              ? dateNasc || new Date()
-              : dateBatismo || new Date()
-          }
-          mode="date"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          maximumDate={new Date()}
-          onChange={onChangeCalendar}
+        <FormSection title="Vínculo">
+          <View style={styles.radioGroup}>
+            <RadioButton.Group
+              value={possuiBatismo}
+              onValueChange={(value) => {
+                setPossuiBatismo(value);
+                if (value === 'nao') {
+                  setTextDateBatismo('');
+                  setDateBatismo(null);
+                }
+              }}
+            >
+              <RadioButton.Item label="Congregado" value="nao" />
+              <RadioButton.Item label="Membro" value="sim" />
+            </RadioButton.Group>
+          </View>
+
+          {possuiBatismo === 'sim' && (
+            <Input
+              placeholder="Data de batismo (DD/MM/AAAA)"
+              keyboardType="numeric"
+              value={textDateBatismo}
+              onChangeText={(text) => {
+                const formatted = formatarData(text);
+                setTextDateBatismo(formatted);
+                parseDate(formatted, setDateBatismo);
+              }}
+              rightIcon={
+                <TouchableOpacity onPress={() => setPickerAberto('batismo')}>
+                  <MaterialIcons name="calendar-today" size={22} color="#555" />
+                </TouchableOpacity>
+              }
+              containerStyle={styles.input}
+              inputContainerStyle={styles.inputContainer}
+            />
+          )}
+        </FormSection>
+
+        <FormSection title="Endereço">
+          <Input
+            placeholder="Rua"
+            value={endereco.logradouro}
+            onChangeText={(text) =>
+              setEndereco({ ...endereco, logradouro: text })
+            }
+            containerStyle={styles.input}
+            inputContainerStyle={styles.inputContainer}
+          />
+
+          <Input
+            placeholder="Número"
+            keyboardType="numeric"
+            value={endereco.numero}
+            onChangeText={(text) =>
+              setEndereco({ ...endereco, numero: text })
+            }
+            containerStyle={styles.input}
+            inputContainerStyle={styles.inputContainer}
+          />
+
+          <Input
+            placeholder="Complemento (opcional)"
+            value={endereco.complemento}
+            onChangeText={(text) =>
+              setEndereco({ ...endereco, complemento: text })
+            }
+            containerStyle={styles.input}
+            inputContainerStyle={styles.inputContainer}
+          />
+
+          <Input
+            placeholder="Bairro"
+            value={endereco.bairro}
+            onChangeText={(text) =>
+              setEndereco({ ...endereco, bairro: text })
+            }
+            containerStyle={styles.input}
+            inputContainerStyle={styles.inputContainer}
+          />
+
+          <Input
+            placeholder="Cidade"
+            value={endereco.cidade}
+            onChangeText={(text) =>
+              setEndereco({ ...endereco, cidade: text })
+            }
+            containerStyle={styles.input}
+            inputContainerStyle={styles.inputContainer}
+          />
+
+          <Input
+            placeholder="Estado (UF)"
+            maxLength={2}
+            autoCapitalize="characters"
+            value={endereco.estado}
+            onChangeText={(text) =>
+              setEndereco({ ...endereco, estado: text })
+            }
+            containerStyle={styles.input}
+            inputContainerStyle={styles.inputContainer}
+          />
+
+          <Input
+            placeholder="CEP (opcional)"
+            keyboardType="numeric"
+            value={endereco.cep}
+            onChangeText={(text) =>
+              setEndereco({ ...endereco, cep: text })
+            }
+            containerStyle={styles.input}
+            inputContainerStyle={styles.inputContainer}
+          />
+        </FormSection>
+
+        <FormSection title="Segurança">
+          <Input
+            placeholder="Senha"
+            secureTextEntry
+            value={senha}
+            onChangeText={setSenha}
+            containerStyle={styles.input}
+            inputContainerStyle={styles.inputContainer}
+          />
+        </FormSection>
+
+        <Button title="Cadastrar" onPress={handleCadastrar} />
+
+        <Button
+          title="Já possui cadastro? Entrar"
+          type="clear"
+          onPress={() => navigation.navigate('Login')}
+          containerStyle={{ marginTop: 12 }}
         />
-      )}
 
-      <Text>Senha</Text>
-      <Input placeholder='Digite aqui para criar uma senha' value={senha} onChangeText={setSenha}/>
+        {pickerAberto && (
+          <DateTimePicker
+            value={
+              pickerAberto === 'nascimento'
+                ? dateNasc || new Date()
+                : dateBatismo || new Date()
+            }
+            mode="date"
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            maximumDate={new Date()}
+            onChange={onChangeCalendar}
+          />
+        )}
 
-      <Button title="Cadastrar" />
-      <Button
-        title="Já possui cadastro? Entrar"
-        onPress={() => navigation.navigate('Login')}
-        containerStyle={{ marginTop: 20 }}
-      />
-    </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    justifyContent: 'center'
+  scrollContainer: {
+    paddingHorizontal: 16,
+    paddingTop: 24,
+    paddingBottom: 32
   },
-  label: {
-    marginTop: 10,
-    fontSize: 16,
-    fontWeight: 'bold'
+
+  input: {
+    paddingHorizontal: 0,
+    marginBottom: 16
+  },
+
+  inputContainer: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc'
   }
 });
 
