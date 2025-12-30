@@ -1,10 +1,83 @@
 import React from 'react';
 import { StyleSheet, Text, View, ScrollView, Image } from 'react-native';
 import { Button, Card } from 'react-native-elements';
+import api from '../services/api';
 import Header from '../components/Header';
 import QRCode from 'react-native-qrcode-svg';
+import { programacao } from '../data/Schedule';
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({ route, navigation }) => {
+
+  // const buscaNome = async () => {
+  //   try {
+  //     const response = await api.get('/usuarios')
+  //     const usuarioEncontrado = response.data[0];
+  //     const nomeUsuario = usuarioEncontrado.nome
+  //     return nomeUsuario;
+  //   }catch(error){
+  //     console.error('Usuário não encontrado', error);
+  //   }
+
+  // }
+
+  const { nomeUsuario } = route.params;
+
+  const cultoTerminou = (diaSemana, horaInicio, agora) => {
+    const minutosAgora = agora.getHours() * 60 + agora.getMinutes();
+    const [h, m] = horaInicio.split(':').map(Number);
+    const inicio = h * 60 + m;
+
+    // Domingo
+    if (diaSemana === 0) {
+      return minutosAgora >= 19 * 60;
+    }
+
+    // Quarta
+    if (diaSemana === 3) {
+      return minutosAgora >= 21 * 60;
+    }
+
+    // Outros dias → culto só tem início
+    return minutosAgora >= inicio;
+  };
+
+
+  const agora = new Date();
+  const diaHoje = agora.getDay();
+  const horaAtual = agora.getHours() * 60 + agora.getMinutes();
+
+  const hoje = programacao.find(d => d.diaSemana === diaHoje);
+
+  const eventosHoje = hoje
+    ? hoje.eventos.filter(ev => {
+      const [h, m] = ev.hora.split(':').map(Number);
+      return h * 60 + m > horaAtual;
+    })
+    : [];
+
+  let proximoCulto = null;
+
+  for (let i = 0; i <= 7; i++) {
+    const dia = (diaHoje + i) % 7;
+    const diaProg = programacao.find(d => d.diaSemana === dia);
+
+    if (!diaProg) continue;
+
+    const cultos = diaProg.eventos.filter(e => e.classificacao === 'culto');
+
+    for (const culto of cultos) {
+      if (i === 0 && cultoTerminou(dia, culto.hora, agora)) continue;
+
+      proximoCulto = {
+        diaLabel: diaProg.label,
+        ...culto,
+      };
+      break;
+    }
+
+    if (proximoCulto) break;
+  }
+
 
   // Exemplo de payload PIX (substitua pelo real)
   const pixPayload =
@@ -13,13 +86,40 @@ const HomeScreen = ({ navigation }) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
 
-      <Header userName="João"/>
+      <Header nome={nomeUsuario} />
 
-      {/* PRÓXIMO CULTO */}
       <Card containerStyle={styles.card}>
-        <Text style={styles.cardTitle}>📅 Próximo Culto</Text>
-        <Text style={styles.eventDay}>Domingo • 17h</Text>
-        <Text style={styles.eventName}>Culto Evangelístico</Text>
+        {/* EVENTOS DE HOJE */}
+        {eventosHoje.length > 0 && (
+          <>
+            <Text style={styles.cardTitle}>📅 Hoje na Igreja</Text>
+
+            {eventosHoje.map((ev, index) => (
+              <View key={index} style={styles.row}>
+                <Text style={styles.hour}>🕒 {ev.hora}</Text>
+                <Text style={styles.event}>{ev.nome}</Text>
+              </View>
+            ))}
+          </>
+        )}
+
+        {/* DIVISOR */}
+        <View style={styles.divider} />
+
+        {/* PRÓXIMO CULTO */}
+        {proximoCulto && (
+          <View style={styles.nextBox}>
+            <Text style={styles.nextLabel}>⭐ Próximo Culto</Text>
+
+            <Text style={styles.nextDay}>
+              {proximoCulto.diaLabel} • {proximoCulto.hora}
+            </Text>
+
+            <Text style={styles.nextEvent}>
+              {proximoCulto.nome}
+            </Text>
+          </View>
+        )}
 
         <Button
           title="Ver programação completa"
@@ -83,25 +183,62 @@ const styles = StyleSheet.create({
   },
 
   card: {
-    borderRadius: 12,
+    borderRadius: 14,
     marginBottom: 20
   },
 
   cardTitle: {
-    fontSize: 18,
+    textAlign: 'center',
+    fontSize: 17,
     fontWeight: 'bold',
     marginBottom: 8
   },
 
-  eventDay: {
-    fontSize: 16,
-    fontWeight: '600'
+  row: {
+    flexDirection: 'row',
+    marginBottom: 4,
   },
 
-  eventName: {
-    fontSize: 14,
+  hour: {
+    width: 70,
+    fontWeight: '600',
+  },
+
+  event: {
+    flex: 1,
     color: '#555',
-    marginBottom: 8
+  },
+
+  divider: {
+    height: 1,
+    backgroundColor: '#eee',
+    marginVertical: 12,
+  },
+
+  /* DESTAQUE DO PRÓXIMO CULTO */
+  nextBox: {
+    backgroundColor: '#eef3ff',
+    padding: 12,
+    borderRadius: 10,
+    borderLeftWidth: 4,
+    borderLeftColor: '#2a5298',
+  },
+
+  nextLabel: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#2a5298',
+    marginBottom: 4,
+  },
+
+  nextDay: {
+    fontSize: 15,
+    fontWeight: '600',
+  },
+
+  nextEvent: {
+    fontSize: 14,
+    color: '#333',
   },
 
   qrContainer: {
@@ -111,6 +248,7 @@ const styles = StyleSheet.create({
 
   pixText: {
     textAlign: 'center',
+    alignItems: 'center',
     color: '#666'
   },
 

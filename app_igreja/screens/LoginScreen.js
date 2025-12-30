@@ -16,7 +16,7 @@ const LoginScreen = ({navigation}) => {
                 const usuarioEncontrado = response.data[0];
 
                 if (usuarioEncontrado){
-                    navigation.navigate('Home');
+                    navigation.navigate('Home', {nomeUsuario: usuarioEncontrado.nome});
                 }else{
                     alert('Usuário ou senha inválidos')
                 }

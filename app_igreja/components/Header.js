@@ -1,36 +1,45 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 
-const Header = ({ userName }) => {
+const Header = ({ nome }) => {
   return (
     <View style={styles.container}>
-      
+
       {/* LOGO */}
       <View style={styles.logoWrapper}>
         <Image
-          source={require('../assets/logo_PIBT.jpg')}
+          source={require('../assets/logo_igreja_PIBT.jpeg')}
           style={styles.logo}
           resizeMode="contain"
         />
       </View>
 
-      {/* TEXTOS */}
-      <Text style={styles.churchName}>Igreja Vida Nova</Text>
-      <Text style={styles.welcome}>Olá, {userName || 'seja bem-vindo'} 👋</Text>
+      {/* NOME DA IGREJA */}
+      <Text style={styles.churchName}>
+        Primeira Igreja Batista em Tabatinga
+      </Text>
+
+      {/* CUMPRIMENTO (BLOCO CENTRAL) */}
+      <View style={styles.welcomeWrapper}>
+        <Text style={styles.welcome}>
+          Olá, {nome || 'seja bem-vindo'} 👋
+        </Text>
+      </View>
+
     </View>
+
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    marginBottom: 24
   },
 
   logoWrapper: {
-    width: 110,
-    height: 110,
-    borderRadius: 55,
+    width: 140,
+    height: 140,
+    borderRadius: 70,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
@@ -48,19 +57,24 @@ const styles = StyleSheet.create({
   },
 
   logo: {
-    width: 80,
-    height: 80
+    width: 100,
+    height: 100
   },
 
   churchName: {
     fontSize: 22,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    textAlign: 'center'
   },
 
   welcome: {
-    fontSize: 15,
+    fontSize: 16,
+    fontWeight: '500',
     color: '#555',
-    marginTop: 4
+    textAlign: 'center',
+    marginTop: 16,
+    marginBottom: 16,
+    paddingVertical: 5
   }
 });
 
