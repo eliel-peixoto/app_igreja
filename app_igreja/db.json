@@ -1,40 +1,55 @@
 {
   "usuarios": [
     {
-      "id": "dc11",
-      "nome": "Teste",
+      "nome": "Eliel",
       "cpf": "123456789011",
-      "senha": "123",
-      "membro": true,
-      "dataNascimento": "2007-08-25",
-      "dataBatismo": "2014-05-17",
-      "endereco": {
-        "logradouro": "Primeira Travessa Amaro Duarte",
-        "numero": "171",
-        "complemento": "Ao lado do terminal de Tabatinga",
-        "bairro": "Tabatinga",
-        "cidade": "Camaragibe",
-        "estado": "PE",
-        "cep": null
-      }
-    },
-    {
-      "id": "22eb",
-      "nome": "First",
-      "cpf": "098765432133",
-      "senha": "321",
+      "senha": "987",
       "membro": false,
-      "dataNascimento": "2005-11-05",
+      "dataNascimento": "2005-11-04",
       "dataBatismo": null,
       "endereco": {
         "logradouro": "Rua de Teste",
-        "numero": "110",
-        "complemento": "Perto da Igreja Ágape",
-        "bairro": "Piedade",
-        "cidade": "Jaboatão dos Guararapes",
+        "numero": "408",
+        "complemento": "Ao lado do armazém",
+        "bairro": "Perto do posto de gasolina",
+        "cidade": "Recife",
         "estado": "PE",
-        "cep": null
-      }
+        "cep": "87543123"
+      },
+      "id": "dc11"
+    },
+    {
+      "nome": "Mateus",
+      "cpf": "87654321098",
+      "senha": "543",
+      "membro": true,
+      "dataNascimento": "2001-04-28",
+      "dataBatismo": "2018-06-14",
+      "endereco": {
+        "logradouro": "Road Recife",
+        "numero": "742",
+        "complemento": "Junto ao restaurante",
+        "bairro": "Pina",
+        "cidade": "Itamaracá",
+        "estado": "AL",
+        "cep": "40028922"
+      },
+      "id": "22eb"
+    }
+  ],
+
+  "devocionais": [
+    {
+      "id": "dev001",
+      "data": "2025-12-31",
+      "titulo": "Confiança em Deus",
+      "livro": "Salmos",
+      "capitulo": 23,
+      "versiculo": 1,
+      "textoBiblico": "O Senhor é o meu pastor; nada me faltará.",
+      "mensagem": "Mesmo em tempos difíceis, confiar no Senhor nos traz paz...",
+      "autor": "Pr. Elias Teófilo",
+      "ativo": true
     }
   ]
 }

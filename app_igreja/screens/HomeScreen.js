@@ -20,7 +20,8 @@ const HomeScreen = ({ route, navigation }) => {
 
   // }
 
-  const { nomeUsuario } = route.params;
+  const { usuarioEncontrado } = route.params;
+  const nomeUsuario = usuarioEncontrado.nome;
 
   const cultoTerminou = (diaSemana, horaInicio, agora) => {
     const minutosAgora = agora.getHours() * 60 + agora.getMinutes();
@@ -152,10 +153,12 @@ const HomeScreen = ({ route, navigation }) => {
         <Button
           title="📖 Devocional"
           buttonStyle={styles.actionButton}
+          onPress={() => navigation.navigate('Devocional')}
         />
         <Button
           title="👤 Perfil"
           buttonStyle={styles.actionButton}
+          onPress={() => navigation.navigate('Perfil', {usuarioEncontrado})}
         />
       </View>
 

@@ -8,6 +8,8 @@ import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import HomeScreen from './screens/HomeScreen';
 import ScheduleScreen from './screens/ScheduleScreen';
+import ProfileScreen from './screens/ProfileScreen';
+import DevocionalScreen from './screens/DevocionalScreen';
 
 const Stack = createStackNavigator();
 
@@ -19,6 +21,8 @@ export default function App() {
         <Stack.Screen name='Cadastro' component={RegisterScreen} options={{ headerShown: false }}/>
         <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false }}/>
         <Stack.Screen name='Programacao' component={ScheduleScreen} options={{headerShown: false}}/>
+        <Stack.Screen name='Perfil' component={ProfileScreen} options={{headerShown: false}}/>
+        <Stack.Screen name='Devocional' component={DevocionalScreen} options={{headerShown: false}}/>
       </Stack.Navigator>
     </NavigationContainer>
     // <View style={styles.container}>
