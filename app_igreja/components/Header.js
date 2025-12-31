@@ -8,7 +8,7 @@ const Header = ({ nome }) => {
       {/* LOGO */}
       <View style={styles.logoWrapper}>
         <Image
-          source={require('../assets/logo_igreja_PIBT.jpeg')}
+          source={require('../assets/logo_igreja_PIBT-correto.png')}
           style={styles.logo}
           resizeMode="contain"
         />
