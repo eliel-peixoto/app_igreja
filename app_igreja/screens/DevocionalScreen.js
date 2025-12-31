@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import api from '../services/api';
 
-const DevotionalScreen = () => {
+const DevocionalScreen = () => {
   const [devocional, setDevocional] = useState(null);
 
   useEffect(() => {
@@ -161,4 +161,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default DevotionalScreen;
+export default DevocionalScreen;

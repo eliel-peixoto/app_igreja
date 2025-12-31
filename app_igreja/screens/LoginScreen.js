@@ -41,7 +41,11 @@ const LoginScreen = ({ navigation }) => {
   return (
     <LinearGradient
       colors={['#0077B6', '#0095D9', '#00AEEF']}
+      style={{flex: 1}}
+    >
+    <KeyboardAvoidingView
       style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       {/* LOGO */}
       <View style={styles.logoContainer}>
@@ -93,6 +97,7 @@ const LoginScreen = ({ navigation }) => {
           onPress={() => navigation.navigate('Cadastro')}
         />
       </View>
+      </KeyboardAvoidingView>
     </LinearGradient>
   );
 };
